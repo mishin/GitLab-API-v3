@@ -2374,6 +2374,36 @@ sub create_project_for_user {
 
 Sends a C<PUT> request to C</projects/:project_id> and returns the decoded/deserialized response body.
 
+Useful example:
+For example you want to edit visibility for all project
+
+    use v5.10;
+    use GitLab::API::v3;
+    my $v3_api_url = 'http://my-server/api/v3/';
+    my $token = 'my$tokendqw3223000';
+    
+    my $api = GitLab::API::v3->new(
+        url   => $v3_api_url,
+        token => $token,
+    );
+    
+    my $all_projects = $api->paginator( 'projects' )->all();
+    
+    my %params = (visibility_level => 10);
+    for my $proj (@{$all_projects}) {
+        say $proj->{id};
+        say 'Change visibility for project id: '.$proj->{id};
+        change_visibility($proj->{id});
+    }
+    
+    sub change_visibility {
+        my ($id) = shift;
+        $api->edit_project(
+            $id,
+            \%params,
+        );
+    }
+
 =cut
 
 sub edit_project {
